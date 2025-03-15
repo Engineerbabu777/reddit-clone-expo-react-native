@@ -1,12 +1,14 @@
-import { View, Text } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import React from "react";
 import { formatDistanceToNowStrict } from "date-fns";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Post } from "../../types";
 
+type Props = {
+  post: Post;
+};
 
-type Props = {};
-
-const PostListItem = (props: Props) => {
+const PostListItem = ({ post }: Props) => {
   return (
     <View style={styles.container}>
       {/* POST HEADER! */}
@@ -129,36 +131,35 @@ const PostListItem = (props: Props) => {
 export default PostListItem;
 
 const styles = StyleSheet.create({
-    joinButton: {
-      backgroundColor: "#0d469b",
-      color: "white",
-      paddingVertical: 2,
-      paddingHorizontal: 7,
-      borderRadius: 10,
-      fontWeight: "bold"
-    },
-    image: {
-      width: 20,
-      height: 20,
-      borderRadius: 10
-    },
-    container: {
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      backgroundColor: "white",
-      flex: 1
-    },
-    postTitleText: {
-      fontWeight: "bold",
-      fontSize: 17,
-      letterSpacing: 0.5
-    },
-    iconBox: {
-      borderWidth: 0.5,
-      borderColor: "#D4D4D4",
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 20
-    }
-  });
-  
+  joinButton: {
+    backgroundColor: "#0d469b",
+    color: "white",
+    paddingVertical: 2,
+    paddingHorizontal: 7,
+    borderRadius: 10,
+    fontWeight: "bold"
+  },
+  image: {
+    width: 20,
+    height: 20,
+    borderRadius: 10
+  },
+  container: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: "white",
+    flex: 1
+  },
+  postTitleText: {
+    fontWeight: "bold",
+    fontSize: 17,
+    letterSpacing: 0.5
+  },
+  iconBox: {
+    borderWidth: 0.5,
+    borderColor: "#D4D4D4",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20
+  }
+});
