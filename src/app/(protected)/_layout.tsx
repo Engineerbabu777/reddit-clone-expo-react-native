@@ -39,7 +39,7 @@ export default function AppLayout() {
                 <View
                   style={{
                     flexDirection: "row",
-                    gap:10
+                    gap: 10
                   }}
                 >
                   <AntDesign name="search1" size={24} color={"white"} />
@@ -54,6 +54,7 @@ export default function AppLayout() {
             )
           }}
         />
+        <Stack.Screen name="groupSelector" options={{ headerShown: false }} />
       </Stack>
     </>
   );
