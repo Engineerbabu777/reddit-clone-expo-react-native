@@ -17,6 +17,13 @@ export default function CreateScreen() {
   const [title, setTitle] = useState<string>("");
   const [bodyText, setBodyText] = useState<string>("");
 
+  const goBack = () => {
+    setTitle("");
+    setBodyText("");
+
+    router.back();
+  };
+
   return (
     <>
       <SafeAreaView
@@ -35,7 +42,7 @@ export default function CreateScreen() {
           <AntDesign name="close" size={30} color={"black"} />
           <Pressable
             onPress={() => {
-              router.back();
+              goBack();
             }}
             style={{
               marginLeft: "auto"
