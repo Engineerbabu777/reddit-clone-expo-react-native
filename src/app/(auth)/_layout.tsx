@@ -4,7 +4,6 @@ import { useAuth } from '@clerk/clerk-expo'
 export default function AuthRoutesLayout() {
   const { isSignedIn } = useAuth()
 
-  console.log("AUth Layout!")
   if (isSignedIn) {
     return <Redirect href={'/'} />
   }

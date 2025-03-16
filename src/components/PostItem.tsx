@@ -7,34 +7,56 @@ import { Link } from "expo-router";
 
 type Props = {
   post: Post;
+  isDetailedPost?: boolean;
 };
 
-const PostListItem = ({ post }: Props) => {
+const PostListItem = ({ post, isDetailedPost }: Props) => {
+  const shouldSHowImage = isDetailedPost || post.image;
+  const shouldShowDescription = isDetailedPost || !post.image;
+
   return (
-    <Link href={"/post/id"}>
+    <Link href={`/post/${post.id}`}>
       <View style={styles.container}>
         {/* POST HEADER! */}
         <View
           style={{
             flexDirection: "row",
-            gap: 10
+            alignItems: "center",
+            marginBottom: 5
           }}
         >
           <Image source={{ uri: post.group.image }} style={styles.image} />
-          <Text
+          <View
             style={{
-              fontWeight: "bold"
+              marginLeft: 10,
+              display: "flex",
+              flexDirection: "column"
             }}
           >
-            {post.group.name}
-          </Text>
-          <Text
-            style={{
-              color: "grey"
-            }}
-          >
-            {formatDistanceToNowStrict(new Date(post.created_at))}
-          </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 5
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: "bold"
+                }}
+              >
+                {post.group.name}
+              </Text>
+              <Text
+                style={{
+                  color: "grey"
+                }}
+              >
+                {formatDistanceToNowStrict(new Date(post.created_at))}
+              </Text>
+            </View>
+
+            <View>{isDetailedPost && <Text>{post.user.name}</Text>}</View>
+          </View>
 
           <View
             style={{
@@ -47,7 +69,7 @@ const PostListItem = ({ post }: Props) => {
 
         {/* CONTENT! */}
         <Text style={styles.postTitleText}>{post?.title}</Text>
-        {post.image && (
+        {shouldSHowImage && post.image && (
           <Image
             source={{ uri: post.image! }}
             style={{
@@ -57,7 +79,7 @@ const PostListItem = ({ post }: Props) => {
             }}
           />
         )}
-        {!post.image && post.description && (
+        {shouldShowDescription && post.description && (
           <Text numberOfLines={4}>{post.description}</Text>
         )}
 
