@@ -11,6 +11,8 @@
   "dependencies": {
     "@clerk/clerk-expo": "^2.8.5",
     "@clerk/types": "^4.48.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@supabase/supabase-js": "^2.49.1",
     "date-fns": "^4.1.0",
     "expo": "~52.0.38",
     "expo-constants": "~17.0.8",
