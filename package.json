@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "gen-types":"npx supabase gen types typescript --project-id efjuossspptyybqodhen > src/types/database.types.ts"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.8.5",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
+    "supabase": "^2.19.7",
     "typescript": "^5.3.3"
   },
   "private": true

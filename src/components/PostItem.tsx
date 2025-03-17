@@ -4,9 +4,10 @@ import { formatDistanceToNowStrict } from "date-fns";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Post } from "../../types";
 import { Link } from "expo-router";
+import { PostWithGroupAndName } from "../app/(protected)/(tabs)";
 
 type Props = {
-  post: Post;
+  post: PostWithGroupAndName;
   isDetailedPost?: boolean;
 };
 
@@ -25,7 +26,7 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
             marginBottom: 5
           }}
         >
-          <Image source={{ uri: post.group.image }} style={styles.image} />
+          <Image source={{ uri: post.group.image! }} style={styles.image} />
           <View
             style={{
               marginLeft: 10,
@@ -51,7 +52,7 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
                   color: "grey"
                 }}
               >
-                {formatDistanceToNowStrict(new Date(post.created_at))}
+                {formatDistanceToNowStrict(new Date(post.created_at!))}
               </Text>
             </View>
 
