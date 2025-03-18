@@ -56,7 +56,7 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
               </Text>
             </View>
 
-            <View>{isDetailedPost && <Text>{post.user.name}</Text>}</View>
+            <View>{isDetailedPost && <Text>{post?.user?.name}</Text>}</View>
           </View>
 
           <View

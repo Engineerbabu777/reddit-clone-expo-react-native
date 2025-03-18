@@ -1,14 +1,19 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import PostListItem from "../../../components/PostItem";
-import { useQuery } from "@tanstack/react-query";
-import { fetchPostById } from "../../../services/post.service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deletePostById, fetchPostById } from "../../../services/post.service";
 import { useSupabase } from "../../../lib/supabse";
+import Entypo from "@expo/vector-icons/Entypo";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function DetailedPost() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const supabase = useSupabase();
+
+  const queryClient = useQueryClient();
 
   const {
     data: post,
@@ -20,6 +25,19 @@ export default function DetailedPost() {
       return fetchPostById(id, supabase);
     },
     staleTime: 10_000
+  });
+
+  const { mutate: remove } = useMutation({
+    mutationFn: async () => {
+      deletePostById(id, supabase);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      router.back();
+    },
+    onError: () => {
+      Alert.alert("Error Deleting Post!!", error?.message);
+    }
   });
 
   if (isLoading) {
@@ -41,6 +59,34 @@ export default function DetailedPost() {
   }
   return (
     <View>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <>
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10
+                }}
+              >
+                <Entypo
+                  name="trash"
+                  size={24}
+                  color={"white"}
+                  onPress={() => remove()}
+                />
+                <AntDesign name="search1" size={24} color={"white"} />
+                <MaterialIcons name="sort" size={24} color={"white"} />
+                <Entypo
+                  name="dots-three-horizontal"
+                  size={24}
+                  color={"white"}
+                />
+              </View>
+            </>
+          )
+        }}
+      />
       <PostListItem post={post} isDetailedPost />
     </View>
   );

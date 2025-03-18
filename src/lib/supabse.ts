@@ -8,9 +8,8 @@ import { useSession } from "@clerk/clerk-expo";
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
-
 export const useSupabase = () => {
-  const { session } = useSession()
+  const { session } = useSession();
 
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
@@ -28,11 +27,11 @@ export const useSupabase = () => {
           // For this tutorial, you named it 'supabase'
           template: "supabase"
         });
-  
+
         // Insert the Clerk Supabase token into the headers
         const headers = new Headers(options?.headers);
         headers.set("Authorization", `Bearer ${clerkToken}`);
-  
+
         // Call the default fetch
         return fetch(url, {
           ...options,
@@ -40,9 +39,8 @@ export const useSupabase = () => {
         });
       }
     }
-  })
-}
-
+  });
+};
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
