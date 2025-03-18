@@ -2,24 +2,12 @@ import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import PostListItem from "../../../components/PostItem";
 import { Tables } from "../../../types/database.types";
 
-import { supabase } from "../../../lib/supabse";
 import { useQuery } from "@tanstack/react-query";
+import { fetchPosts } from "../../../services/post.service";
 
 export type PostWithGroupAndName = Tables<"posts"> & {
   user: Tables<"users">;
   group: Tables<"groups">;
-};
-
-const fetchPosts = async () => {
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*, group:groups(*), user:users!posts_user_id_fkey(*)");
-
-  if (error) {
-    throw error;
-  } else {
-    return data;
-  }
 };
 
 export default function HomeScreen() {
