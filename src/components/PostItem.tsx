@@ -15,8 +15,9 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
   const shouldShowDescription = isDetailedPost || !post.image;
 
   return (
-    <Link href={`/post/${post.id}`} asChild>
-      <Pressable style={styles.container}>
+    <Link href={`/post/${post.id}`}>
+
+      <View style={styles.container}>
         {/* POST HEADER! */}
         <View
           style={{
@@ -148,7 +149,8 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
             />
           </View>
         </View>
-      </Pressable>
+      </View>
+
     </Link>
   );
 };
@@ -173,7 +175,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     backgroundColor: "white",
-    flex: 1
+    flex: 1,
+    width:'100%'
   },
   postTitleText: {
     fontWeight: "bold",

@@ -11,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import groups from "../../../assets/data/groups.json";
 import { useSetAtom } from "jotai";
 import { selectedGroupAtom } from "../../atoms";
 import { Group } from "../../../types";

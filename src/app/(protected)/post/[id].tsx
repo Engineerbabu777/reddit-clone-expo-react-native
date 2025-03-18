@@ -15,7 +15,7 @@ export default function DetailedPost() {
   } = useQuery({
     queryKey: ["posts", id],
     queryFn: async () => {
-      fetchPostById(id);
+      return fetchPostById(id);
     },
     staleTime:10_000
   });
