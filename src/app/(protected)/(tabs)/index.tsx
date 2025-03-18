@@ -35,7 +35,17 @@ export default function HomeScreen() {
   });
 
   if (isLoading) {
-    return <ActivityIndicator />;
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <ActivityIndicator size={"small"} />
+      </View>
+    );
   }
 
   if (error) {

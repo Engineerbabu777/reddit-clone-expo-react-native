@@ -1,8 +1,7 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { formatDistanceToNowStrict } from "date-fns";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Post } from "../../types";
 import { Link } from "expo-router";
 import { PostWithGroupAndName } from "../app/(protected)/(tabs)";
 
@@ -16,8 +15,8 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
   const shouldShowDescription = isDetailedPost || !post.image;
 
   return (
-    <Link href={`/post/${post.id}`}>
-      <View style={styles.container}>
+    <Link href={`/post/${post.id}`} asChild>
+      <Pressable style={styles.container}>
         {/* POST HEADER! */}
         <View
           style={{
@@ -149,7 +148,7 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
             />
           </View>
         </View>
-      </View>
+      </Pressable>
     </Link>
   );
 };
