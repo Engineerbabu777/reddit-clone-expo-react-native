@@ -16,7 +16,8 @@ export default function DetailedPost() {
     queryKey: ["posts", id],
     queryFn: async () => {
       fetchPostById(id);
-    }
+    },
+    staleTime:10_000
   });
 
   if (isLoading) {

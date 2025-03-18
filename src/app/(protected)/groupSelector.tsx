@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Pressable,
@@ -14,14 +15,37 @@ import groups from "../../../assets/data/groups.json";
 import { useSetAtom } from "jotai";
 import { selectedGroupAtom } from "../../atoms";
 import { Group } from "../../../types";
+import { useQuery } from "@tanstack/react-query";
+import { fetchGroups } from "../../services/group.service";
 
 export default function GroupSelector() {
   const [searchText, setSearchText] = useState<string>("");
   const setGroup = useSetAtom(selectedGroupAtom);
 
-  const filteredGroups = groups.filter((group) =>
-    group.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["groups", { searchText }],
+    queryFn: async () => fetchGroups(searchText),
+    placeholderData: (previousData) => previousData,
+    staleTime: 10_000
+  });
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <ActivityIndicator size={"small"} />
+      </View>
+    );
+  }
+
+  if (error || !data) {
+    return <Text>Post not found</Text>;
+  }
 
   return (
     <>

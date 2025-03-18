@@ -19,7 +19,8 @@ export default function HomeScreen() {
     queryKey: ["posts"],
     queryFn: async () => {
       return fetchPosts();
-    }
+    },
+    staleTime: 10_000
   });
 
   if (isLoading) {
