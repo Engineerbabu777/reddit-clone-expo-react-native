@@ -13,10 +13,12 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { useSetAtom } from "jotai";
 import { selectedGroupAtom } from "../../atoms";
-import { Group } from "../../../types";
 import { useQuery } from "@tanstack/react-query";
 import { fetchGroups } from "../../services/group.service";
+import { Tables } from "../../types/database.types";
 
+
+export type Group = Tables<"groups">
 export default function GroupSelector() {
   const [searchText, setSearchText] = useState<string>("");
   const setGroup = useSetAtom(selectedGroupAtom);
@@ -114,7 +116,7 @@ export default function GroupSelector() {
         </View>
 
         <FlatList
-          data={filteredGroups}
+          data={data || []}
           renderItem={({ item }: { item: Group }) => (
             <Pressable
               style={{
