@@ -4,21 +4,26 @@ import { Tables } from "../../../types/database.types";
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "../../../services/post.service";
+import { useSupabase } from "../../../lib/supabse";
 
 export type PostWithGroupAndName = Tables<"posts"> & {
-  user: Tables<"users">;
+  // user: Tables<"users">;
   group: Tables<"groups">;
 };
 
 export default function HomeScreen() {
+
+  const supabase = useSupabase()
   const {
     data: posts,
     isLoading,
-    error
+    error,
+    refetch,
+    isRefetching
   } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
-      return fetchPosts();
+      return fetchPosts(supabase);
     },
     staleTime: 10_000
   });
@@ -47,6 +52,8 @@ export default function HomeScreen() {
         keyExtractor={(item: PostWithGroupAndName) => item.id}
         data={posts}
         renderItem={({ item }) => <PostListItem post={item} />}
+        onRefresh={refetch}
+        refreshing={isRefetching}
       />
     </View>
   );

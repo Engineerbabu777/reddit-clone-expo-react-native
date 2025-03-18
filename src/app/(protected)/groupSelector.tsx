@@ -16,16 +16,18 @@ import { selectedGroupAtom } from "../../atoms";
 import { useQuery } from "@tanstack/react-query";
 import { fetchGroups } from "../../services/group.service";
 import { Tables } from "../../types/database.types";
+import { useSupabase } from "../../lib/supabse";
 
-
-export type Group = Tables<"groups">
+export type Group = Tables<"groups">;
 export default function GroupSelector() {
   const [searchText, setSearchText] = useState<string>("");
+  const supabase = useSupabase();
+
   const setGroup = useSetAtom(selectedGroupAtom);
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["groups", { searchText }],
-    queryFn: async () => fetchGroups(searchText),
+    queryFn: async () => fetchGroups(searchText,supabase),
     placeholderData: (previousData) => previousData,
     staleTime: 10_000
   });
@@ -131,7 +133,7 @@ export default function GroupSelector() {
               }}
             >
               <Image
-                source={{ uri: item.image }}
+                source={{ uri: item.image! }}
                 style={{
                   width: 40,
                   aspectRatio: 1,

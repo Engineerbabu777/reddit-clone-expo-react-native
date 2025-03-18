@@ -4,9 +4,11 @@ import { useLocalSearchParams } from "expo-router";
 import PostListItem from "../../../components/PostItem";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPostById } from "../../../services/post.service";
+import { useSupabase } from "../../../lib/supabse";
 
 export default function DetailedPost() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const supabase = useSupabase();
 
   const {
     data: post,
@@ -15,9 +17,9 @@ export default function DetailedPost() {
   } = useQuery({
     queryKey: ["posts", id],
     queryFn: async () => {
-      return fetchPostById(id);
+      return fetchPostById(id, supabase);
     },
-    staleTime:10_000
+    staleTime: 10_000
   });
 
   if (isLoading) {
