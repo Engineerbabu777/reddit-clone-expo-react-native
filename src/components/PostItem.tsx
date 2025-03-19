@@ -4,9 +4,10 @@ import { formatDistanceToNowStrict } from "date-fns";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import { PostWithGroupAndName } from "../app/(protected)/(tabs)";
-import { useMutation } from "@tanstack/react-query";
-import { createUpvotes } from "../services/upvotes.service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createUpvotes, selectMyVote } from "../services/upvotes.service";
 import { useSupabase } from "../lib/supabse";
+import { useSession } from "@clerk/clerk-expo";
 
 type Props = {
   post: PostWithGroupAndName;
@@ -17,16 +18,29 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
   const shouldSHowImage = isDetailedPost || post.image;
   const shouldShowDescription = isDetailedPost || !post.image;
   const router = useRouter();
+  const { session } = useSession();
 
   const supabase = useSupabase();
-  const { mutate: upvotes, isLoading: isUpvoteLoading } = useMutation({
+  const queryClient = useQueryClient();
+  const { mutate: upvotes } = useMutation({
     mutationFn: async (value: 1 | -1) => {
       return createUpvotes(post.id, value, supabase);
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       console.log({ data });
     }
   });
+
+  const { data: myVote } = useQuery({
+    queryKey: ["posts", post.id, "my-votes"],
+    queryFn: async () => {
+      return selectMyVote(post.id, session?.user?.id!, supabase);
+    }
+  });
+
+  const isLiked = myVote?.value === 1;
+  const isDisliked = myVote?.value === -1;
 
   const navigateToPost = () => {
     router.push(`/post/${post.id}`);
@@ -70,30 +84,26 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
           <View style={styles.iconBox}>
             <Pressable
               onPress={() => {
-                if (!isUpvoteLoading) {
-                  upvotes(1);
-                }
+                upvotes(1);
               }}
             >
               <MaterialCommunityIcons
                 name="arrow-up-bold-outline"
                 size={19}
-                color="black"
+                color={isLiked ? "crimson" : "black"}
               />
             </Pressable>
             <Text style={styles.iconText}>{post?.upvotes?.[0]?.sum || 0}</Text>
             <View style={styles.separator} />
             <Pressable
               onPress={() => {
-                if (!isUpvoteLoading) {
-                  upvotes(-1);
-                }
+                upvotes(-1);
               }}
             >
               <MaterialCommunityIcons
                 name="arrow-down-bold-outline"
                 size={19}
-                color="black"
+                color={isDisliked ? "crimson" : "black"}
               />
             </Pressable>
           </View>

@@ -109,19 +109,22 @@ export type Database = {
       }
       upvotes: {
         Row: {
-          created_at: string | null
+          created_at: string
           post_id: string
-          user_id: string | null
+          user_id: string
+          value: number
         }
         Insert: {
-          created_at?: string | null
-          post_id: string
-          user_id?: string | null
+          created_at?: string
+          post_id?: string
+          user_id?: string
+          value?: number
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           post_id?: string
-          user_id?: string | null
+          user_id?: string
+          value?: number
         }
         Relationships: [
           {
