@@ -1,13 +1,21 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable, FlatList } from "react-native";
 import { Entypo, Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDistanceToNowStrict } from "date-fns";
 import Comment from "../../assets/data/comments.json";
+import { useState, useRef } from "react";
 
 type CommentListItemProps = {
   comment: Comment;
+  depth: number;
+  handleReply: (commentId: string) => void;
 };
 
-const CommentListItem = ({ comment }: CommentListItemProps) => {
+const CommentListItem = ({
+  comment,
+  depth = 0,
+  handleReply
+}: CommentListItemProps) => {
+  const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
   return (
     <View
       style={{
@@ -16,7 +24,8 @@ const CommentListItem = ({ comment }: CommentListItemProps) => {
         paddingHorizontal: 10,
         paddingVertical: 5,
         gap: 10,
-        borderLeftColor: "#E5E7EB"
+        borderLeftColor: "#E5E7EB",
+        borderLeftWidth: depth > 0 ? 1 : 0
       }}
     >
       {/* User Info */}
@@ -55,7 +64,7 @@ const CommentListItem = ({ comment }: CommentListItemProps) => {
           name="reply"
           size={16}
           color="#737373"
-          onPress={() => console.log("Reply button pressed")}
+          onPress={() => handleReply(comment.id)}
         />
         <MaterialCommunityIcons
           name="trophy-outline"
@@ -78,6 +87,47 @@ const CommentListItem = ({ comment }: CommentListItemProps) => {
           />
         </View>
       </View>
+      {/* Show replies! */}
+      {!!comment?.replies?.length && !isShowReplies && depth < 5 && (
+        <Pressable
+          style={{
+            backgroundColor: "#ededed",
+            borderRadius: 2,
+            paddingVertical: 3,
+            alignItems: "center"
+          }}
+          onPress={() => {
+            setIsShowReplies(true);
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              letterSpacing: 0.5,
+              fontWeight: "500",
+              color: "#545454"
+            }}
+          >
+            Show replies
+          </Text>
+        </Pressable>
+      )}
+
+      {/* List of Replies */}
+      {isShowReplies && (
+        <FlatList
+          data={comment.replies}
+          renderItem={({ item }: any) => (
+            <>
+              <CommentListItem
+                comment={item}
+                depth={depth + 1}
+                handleReply={handleReply}
+              />
+            </>
+          )}
+        />
+      )}
     </View>
   );
 };

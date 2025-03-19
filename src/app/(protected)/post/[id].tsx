@@ -8,7 +8,7 @@ import {
   TextInput,
   View
 } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import posts from "../../../../assets/data/posts.json";
 import PostListItem from "../../../components/PostItem";
@@ -20,10 +20,16 @@ export default function DetailedPost() {
   const { id } = useLocalSearchParams();
   const [comment, setComment] = useState<string>("");
   const [isInputFocused, setIsFocused] = useState<boolean>(false);
+  const inputRef = useRef<TextInput | null>(null);
 
   const insets = useSafeAreaInsets();
 
   const detailedPost = posts.find((post) => post.id === id);
+
+  const handleReplyButtonPressed = (commentId: string) => {
+    console.log({ commentId });
+    inputRef.current?.focus();
+  };
 
   const postComments = comments.filter(
     (comment) => comment.post_id === "post-1"
@@ -36,12 +42,19 @@ export default function DetailedPost() {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={insets.top + 10}
+      style={{
+        flex: 1
+      }}
     >
       <FlatList
         data={postComments}
         renderItem={({ item }: any) => (
           <>
-            <CommentListItem comment={item} />
+            <CommentListItem
+              comment={item}
+              depth={0}
+              handleReply={handleReplyButtonPressed}
+            />
           </>
         )}
         ListHeaderComponent={
@@ -56,19 +69,20 @@ export default function DetailedPost() {
           borderColor: "lightgray",
           padding: 10,
           backgroundColor: "white",
-          borderRadius: 10,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
+          borderRadius: 10
+          // shadowColor: "#000",
+          // shadowOffset: {
+          //   width: 0,
+          //   height: 2
+          // },
+          // shadowOpacity: 0.25,
+          // shadowRadius: 3.84,
 
-          elevation: 5
+          // elevation: 5
         }}
       >
         <TextInput
+          ref={inputRef}
           placeholder="Join the conversation"
           style={{
             backgroundColor: "#E4E4E4",
