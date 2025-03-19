@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -15,11 +16,66 @@ import { Link, router } from "expo-router";
 import { useState } from "react";
 import { useAtom } from "jotai";
 import { selectedGroupAtom } from "../../../atoms";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase, useSupabase } from "../../../lib/supabse";
+import { Database, TablesInsert } from "../../../types/database.types";
+import { SupabaseClient } from "@supabase/supabase-js";
+
+type InsertPost = TablesInsert<"posts">;
+const insertPost = async (
+  post: InsertPost,
+  supabase: SupabaseClient<Database>
+) => {
+  const { data, error } = await supabase
+    .from("posts")
+    .insert(post)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
+};
 
 export default function CreateScreen() {
   const [title, setTitle] = useState<string>("");
   const [bodyText, setBodyText] = useState<string>("");
+  const supabase = useSupabase();
   const [group, setGroup] = useAtom(selectedGroupAtom);
+
+  const queryClient = useQueryClient();
+
+  const { isPending, data, mutate } = useMutation({
+    mutationFn: async () => {
+      if (!group) {
+        throw new Error("Group is required");
+      }
+
+      if (!title) {
+        throw new Error("Title is required");
+      }
+
+      return insertPost(
+        {
+          description: bodyText,
+          title,
+          group_id: group?.id,
+          created_at: new Date().toUTCString()
+        },
+        supabase
+      );
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      goBack();
+    },
+    onError: (error) => {
+      Alert.alert("Failed to insert!!", error.message);
+      console.log({ error });
+    }
+  });
 
   const goBack = () => {
     setTitle("");
@@ -55,8 +111,12 @@ export default function CreateScreen() {
             style={{
               marginLeft: "auto"
             }}
+            onPress={() => mutate()}
+            disabled={isPending}
           >
-            <Text style={styles.postText}>Post</Text>
+            <Text style={styles.postText}>
+              {isPending ? "Posting" : "Post"}
+            </Text>
           </Pressable>
         </View>
 

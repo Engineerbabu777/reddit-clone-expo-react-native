@@ -33,24 +33,6 @@ export default function AppLayout() {
                   onPress={() => router.back()}
                 />
               </>
-            ),
-            headerRight: () => (
-              <>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 10
-                  }}
-                >
-                  <AntDesign name="search1" size={24} color={"white"} />
-                  <MaterialIcons name="sort" size={24} color={"white"} />
-                  <Entypo
-                    name="dots-three-horizontal"
-                    size={24}
-                    color={"white"}
-                  />
-                </View>
-              </>
             )
           }}
         />
