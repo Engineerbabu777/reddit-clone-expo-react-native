@@ -8,6 +8,7 @@ import { useSupabase } from "../../../lib/supabse";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Comments from  '../../../../assets/data/comments.json';
 
 export default function DetailedPost() {
   const { id } = useLocalSearchParams<{ id: string }>();
