@@ -4,8 +4,8 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { useState, useRef, memo } from "react";
 import { Comment } from "../../types";
 import { useQuery } from "@tanstack/react-query";
-import { fetchComments, fetchReplies } from "../services/post.service";
 import { useSupabase } from "../lib/supabse";
+import { fetchReplies } from "../services/comment.service";
 
 type CommentListItemProps = {
   comment: Comment;

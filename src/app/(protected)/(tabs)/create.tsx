@@ -17,7 +17,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 import { selectedGroupAtom } from "../../../atoms";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase, useSupabase } from "../../../lib/supabse";
+import { useSupabase } from "../../../lib/supabse";
 import { Database, TablesInsert } from "../../../types/database.types";
 import { SupabaseClient } from "@supabase/supabase-js";
 

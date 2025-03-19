@@ -15,15 +15,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ActivityIndicator, Alert } from "react-native";
 import { router, Stack } from "expo-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  deletePostById,
-  fetchComments,
-  fetchPostById
-} from "../../../services/post.service";
+import { deletePostById, fetchPostById } from "../../../services/post.service";
 import { useSupabase } from "../../../lib/supabse";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {
+  fetchComments,
+  insertComment
+} from "../../../services/comment.service";
 
 export default function DetailedPost() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -32,6 +32,7 @@ export default function DetailedPost() {
   const [comment, setComment] = useState<string>("");
   const [isInputFocused, setIsFocused] = useState<boolean>(false);
   const inputRef = useRef<TextInput | null>(null);
+  const [replyToId, setReplyToId] = useState<null | string>(null);
 
   const insets = useSafeAreaInsets();
 
@@ -51,7 +52,7 @@ export default function DetailedPost() {
   });
 
   const { data: comments } = useQuery({
-    queryKey: ["comments", { postOd: id }],
+    queryKey: ["comments", { postId: id }],
     queryFn: () => fetchComments(id, supabase)
   });
 
@@ -68,10 +69,31 @@ export default function DetailedPost() {
     }
   });
 
-  // FECTHING ---
+  const { mutate: addComment } = useMutation({
+    mutationFn: async () => {
+      return insertComment(
+        {
+          comment,
+          post_id: id,
+          parent_id: replyToId
+        },
+        supabase
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", { postId: id }] });
+      setReplyToId(null);
+    },
+    onError: () => {
+      Alert.alert("Error Comment Adding!!", error?.message);
+    }
+  });
+
+  // FETCHING ---
 
   const handleReplyButtonPressed = useCallback((commentId: string) => {
     console.log({ commentId });
+    setReplyToId(commentId);
     inputRef.current?.focus();
   }, []);
 
@@ -175,6 +197,7 @@ export default function DetailedPost() {
               marginLeft: "auto",
               marginTop: 15
             }}
+            onPress={() => addComment()}
           >
             <Text
               style={{
