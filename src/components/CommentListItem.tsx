@@ -2,7 +2,7 @@ import { View, Text, Image, Pressable, FlatList } from "react-native";
 import { Entypo, Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDistanceToNowStrict } from "date-fns";
 import Comment from "../../assets/data/comments.json";
-import { useState, useRef } from "react";
+import { useState, useRef, memo } from "react";
 
 type CommentListItemProps = {
   comment: Comment;
@@ -132,4 +132,4 @@ const CommentListItem = ({
   );
 };
 
-export default CommentListItem;
+export default memo(CommentListItem);

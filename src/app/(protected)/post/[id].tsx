@@ -8,7 +8,7 @@ import {
   TextInput,
   View
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import posts from "../../../../assets/data/posts.json";
 import PostListItem from "../../../components/PostItem";
@@ -26,10 +26,10 @@ export default function DetailedPost() {
 
   const detailedPost = posts.find((post) => post.id === id);
 
-  const handleReplyButtonPressed = (commentId: string) => {
+  const handleReplyButtonPressed = useCallback((commentId: string) => {
     console.log({ commentId });
     inputRef.current?.focus();
-  };
+  }, []);
 
   const postComments = comments.filter(
     (comment) => comment.post_id === "post-1"
