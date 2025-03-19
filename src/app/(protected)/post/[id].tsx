@@ -10,7 +10,6 @@ import {
 import React, { useCallback, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import PostListItem from "../../../components/PostItem";
-import comments from "../../../../assets/data/comments.json";
 import CommentListItem from "../../../components/CommentListItem";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ActivityIndicator, Alert } from "react-native";
@@ -51,7 +50,7 @@ export default function DetailedPost() {
     staleTime: 10_000
   });
 
-  const {data:comments} = useQuery({
+  const { data: comments } = useQuery({
     queryKey: ["comments", { postOd: id }],
     queryFn: () => fetchComments(id, supabase)
   });

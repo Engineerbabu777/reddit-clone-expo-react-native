@@ -5,11 +5,13 @@ import { Tables } from "../../../types/database.types";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "../../../services/post.service";
 import { useSupabase } from "../../../lib/supabse";
+import { Comment } from "../../../../types";
 
 export type PostWithGroupAndName = Tables<"posts"> & {
   // user: Tables<"users">;
   group: Tables<"groups">;
   upvotes: [{ sum: number }];
+  comments:Tables<"comments">;
 };
 
 export default function HomeScreen() {
@@ -50,7 +52,7 @@ export default function HomeScreen() {
     <View>
       <FlatList
         keyExtractor={(item: PostWithGroupAndName) => item.id}
-        data={posts}
+        data={posts!=undefined ? posts : []}
         renderItem={({ item }) => <PostListItem post={item} />}
         onRefresh={refetch}
         refreshing={isRefetching}

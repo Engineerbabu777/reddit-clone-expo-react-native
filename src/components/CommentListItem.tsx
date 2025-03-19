@@ -21,8 +21,8 @@ const CommentListItem = ({
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
   const supabase = useSupabase();
 
-  const { data: comments } = useQuery({
-    queryKey: ["comments", { parentId: comment.id }],
+  const { data: replies } = useQuery({
+    queryKey: ["replies", { parentId: comment.id }],
     queryFn: () => fetchReplies(comment.id, supabase)
   });
 
@@ -39,7 +39,7 @@ const CommentListItem = ({
       }}
     >
       {/* User Info */}
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+      {/* <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
         <Image
           source={{
             uri:
@@ -55,7 +55,7 @@ const CommentListItem = ({
         <Text style={{ color: "#737373", fontSize: 13 }}>
           {formatDistanceToNowStrict(new Date(comment.created_at))}
         </Text>
-      </View>
+      </View> */}
 
       {/* Comment Content */}
       <Text>{comment.comment}</Text>
@@ -98,7 +98,7 @@ const CommentListItem = ({
         </View>
       </View>
       {/* Show replies! */}
-      {!!comments?.length && !isShowReplies && depth < 5 && (
+      {!!replies?.length && !isShowReplies && depth < 5 && (
         <Pressable
           style={{
             backgroundColor: "#ededed",
@@ -138,9 +138,9 @@ const CommentListItem = ({
           )}
         />
       )} */}
-      {isShowReplies && comments?.length && (
+      {isShowReplies && replies?.length && (
         <>
-          {comments.map((item: any) => (
+          {replies.map((item: any) => (
             <CommentListItem
               key={item.id}
               comment={item}
