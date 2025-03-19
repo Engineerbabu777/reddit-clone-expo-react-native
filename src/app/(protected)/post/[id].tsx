@@ -1,19 +1,38 @@
-import { ActivityIndicator, Alert, Text, View } from "react-native";
-import React from "react";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View
+} from "react-native";
+import React, { useCallback, useRef, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 import PostListItem from "../../../components/PostItem";
+import comments from "../../../../assets/data/comments.json";
+import CommentListItem from "../../../components/CommentListItem";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ActivityIndicator, Alert } from "react-native";
+import { router, Stack } from "expo-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deletePostById, fetchPostById } from "../../../services/post.service";
 import { useSupabase } from "../../../lib/supabse";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Comments from  '../../../../assets/data/comments.json';
 
 export default function DetailedPost() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const supabase = useSupabase();
 
+  const [comment, setComment] = useState<string>("");
+  const [isInputFocused, setIsFocused] = useState<boolean>(false);
+  const inputRef = useRef<TextInput | null>(null);
+
+  const insets = useSafeAreaInsets();
+
+  // FETCHING ---
   const queryClient = useQueryClient();
 
   const {
@@ -41,6 +60,17 @@ export default function DetailedPost() {
     }
   });
 
+  // FECTHING ---
+
+  const handleReplyButtonPressed = useCallback((commentId: string) => {
+    console.log({ commentId });
+    inputRef.current?.focus();
+  }, []);
+
+  const postComments = comments.filter(
+    (comment) => comment.post_id === "post-1"
+  );
+
   if (isLoading) {
     return (
       <View
@@ -58,8 +88,15 @@ export default function DetailedPost() {
   if (error || !post) {
     return <Text>Post not found</Text>;
   }
+
   return (
-    <View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={insets.top + 10}
+      style={{
+        flex: 1
+      }}
+    >
       <Stack.Screen
         options={{
           headerRight: () => (
@@ -88,7 +125,67 @@ export default function DetailedPost() {
           )
         }}
       />
-      <PostListItem post={post} isDetailedPost />
-    </View>
+      <FlatList
+        data={postComments}
+        renderItem={({ item }: any) => (
+          <>
+            <CommentListItem
+              comment={item}
+              depth={0}
+              handleReply={handleReplyButtonPressed}
+            />
+          </>
+        )}
+        ListHeaderComponent={<PostListItem post={post} isDetailedPost />}
+      />
+
+      <View
+        style={{
+          paddingBottom: insets.bottom,
+
+          borderColor: "lightgray",
+          padding: 10,
+          backgroundColor: "white",
+          borderRadius: 10
+        }}
+      >
+        <TextInput
+          ref={inputRef}
+          placeholder="Join the conversation"
+          style={{
+            backgroundColor: "#E4E4E4",
+            padding: 5,
+            borderRadius: 5
+          }}
+          value={comment}
+          onChangeText={(text) => setComment(text)}
+          multiline
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+        />
+        {isInputFocused && (
+          <Pressable
+            style={{
+              backgroundColor: "#0d469b",
+              borderRadius: 15,
+              marginLeft: "auto",
+              marginTop: 15
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                fontWeight: "bold",
+                fontSize: 13
+              }}
+            >
+              Reply
+            </Text>
+          </Pressable>
+        )}
+      </View>
+    </KeyboardAvoidingView>
   );
 }
