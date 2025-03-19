@@ -9,11 +9,11 @@ import { useSupabase } from "../../../lib/supabse";
 export type PostWithGroupAndName = Tables<"posts"> & {
   // user: Tables<"users">;
   group: Tables<"groups">;
+  upvotes: [{ sum: number }];
 };
 
 export default function HomeScreen() {
-
-  const supabase = useSupabase()
+  const supabase = useSupabase();
   const {
     data: posts,
     isLoading,

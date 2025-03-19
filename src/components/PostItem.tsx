@@ -16,7 +16,6 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
 
   return (
     <Link href={`/post/${post.id}`}>
-
       <View style={styles.container}>
         {/* POST HEADER! */}
         <View
@@ -100,7 +99,7 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
                   alignSelf: "center"
                 }}
               >
-                {post.upvotes}
+                {post?.upvotes?.[0]?.sum || 0}
               </Text>
               <View
                 style={{
@@ -150,7 +149,6 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
           </View>
         </View>
       </View>
-
     </Link>
   );
 };
@@ -176,7 +174,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: "white",
     flex: 1,
-    width:'100%'
+    width: "100%"
   },
   postTitleText: {
     fontWeight: "bold",
