@@ -16,7 +16,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ActivityIndicator, Alert } from "react-native";
 import { router, Stack } from "expo-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deletePostById, fetchPostById } from "../../../services/post.service";
+import {
+  deletePostById,
+  fetchComments,
+  fetchPostById
+} from "../../../services/post.service";
 import { useSupabase } from "../../../lib/supabse";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -47,6 +51,11 @@ export default function DetailedPost() {
     staleTime: 10_000
   });
 
+  const {data:comments} = useQuery({
+    queryKey: ["comments", { postOd: id }],
+    queryFn: () => fetchComments(id, supabase)
+  });
+
   const { mutate: remove } = useMutation({
     mutationFn: async () => {
       deletePostById(id, supabase);
@@ -66,10 +75,6 @@ export default function DetailedPost() {
     console.log({ commentId });
     inputRef.current?.focus();
   }, []);
-
-  const postComments = comments.filter(
-    (comment) => comment.post_id === "post-1"
-  );
 
   if (isLoading) {
     return (
@@ -126,7 +131,7 @@ export default function DetailedPost() {
         }}
       />
       <FlatList
-        data={postComments}
+        data={comments}
         renderItem={({ item }: any) => (
           <>
             <CommentListItem

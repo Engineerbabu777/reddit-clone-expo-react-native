@@ -1,8 +1,11 @@
 import { View, Text, Image, Pressable, FlatList } from "react-native";
 import { Entypo, Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDistanceToNowStrict } from "date-fns";
-import Comment from "../../assets/data/comments.json";
 import { useState, useRef, memo } from "react";
+import { Comment } from "../../types";
+import { useQuery } from "@tanstack/react-query";
+import { fetchComments, fetchReplies } from "../services/post.service";
+import { useSupabase } from "../lib/supabse";
 
 type CommentListItemProps = {
   comment: Comment;
@@ -16,6 +19,13 @@ const CommentListItem = ({
   handleReply
 }: CommentListItemProps) => {
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
+  const supabase = useSupabase();
+
+  const { data: comments } = useQuery({
+    queryKey: ["comments", { parentId: comment.id }],
+    queryFn: () => fetchReplies(comment.id, supabase)
+  });
+
   return (
     <View
       style={{
@@ -88,7 +98,7 @@ const CommentListItem = ({
         </View>
       </View>
       {/* Show replies! */}
-      {!!comment?.replies?.length && !isShowReplies && depth < 5 && (
+      {!!comments?.length && !isShowReplies && depth < 5 && (
         <Pressable
           style={{
             backgroundColor: "#ededed",
@@ -128,15 +138,15 @@ const CommentListItem = ({
           )}
         />
       )} */}
-      {isShowReplies && (
+      {isShowReplies && comments?.length && (
         <>
-          {comment.replies.map((item: any) => (
-                <CommentListItem
-                  key={item.id}
-                  comment={item}
-                  depth={depth + 1}
-                  handleReply={handleReply}
-                />
+          {comments.map((item: any) => (
+            <CommentListItem
+              key={item.id}
+              comment={item}
+              depth={depth + 1}
+              handleReply={handleReply}
+            />
           ))}
         </>
       )}
