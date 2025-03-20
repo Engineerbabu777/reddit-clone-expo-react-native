@@ -1,3 +1,5 @@
+import * as ImagePicker from "expo-image-picker";
+
 import {
   Alert,
   Image,
@@ -10,16 +12,17 @@ import {
   TextInput,
   View
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { AntDesign } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
-import { useState } from "react";
-import { useAtom } from "jotai";
-import { selectedGroupAtom } from "../../../atoms";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSupabase } from "../../../lib/supabse";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import { Database, TablesInsert } from "../../../types/database.types";
+import { Link, router } from "expo-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { selectedGroupAtom } from "../../../atoms";
+import { useAtom } from "jotai";
+import { useState } from "react";
+import { useSupabase } from "../../../lib/supabse";
 
 type InsertPost = TablesInsert<"posts">;
 const insertPost = async (
@@ -42,6 +45,8 @@ const insertPost = async (
 export default function CreateScreen() {
   const [title, setTitle] = useState<string>("");
   const [bodyText, setBodyText] = useState<string>("");
+  const [image, setImage] = useState<string | null>(null);
+
   const supabase = useSupabase();
   const [group, setGroup] = useAtom(selectedGroupAtom);
 
@@ -84,6 +89,20 @@ export default function CreateScreen() {
     router.back();
   };
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      quality: 1
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   return (
     <>
       <SafeAreaView
@@ -122,6 +141,9 @@ export default function CreateScreen() {
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{
+            flex: 1
+          }}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* COMMUNITY SELECTOR! */}
@@ -160,6 +182,30 @@ export default function CreateScreen() {
               scrollEnabled={false}
             />
 
+            {image && (
+              <View style={{ paddingBottom: 20 }}>
+                <AntDesign
+                  name="close"
+                  size={25}
+                  color="white"
+                  onPress={() => setImage(null)}
+                  style={{
+                    position: "absolute",
+                    zIndex: 1,
+                    right: 10,
+                    top: 10,
+                    padding: 5,
+                    backgroundColor: "#00000090",
+                    borderRadius: 20
+                  }}
+                />
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: "100%", aspectRatio: 1 }}
+                />
+              </View>
+            )}
+
             <TextInput
               placeholder="Body Text (optional)"
               value={bodyText}
@@ -168,6 +214,13 @@ export default function CreateScreen() {
               scrollEnabled={false}
             />
           </ScrollView>
+          {/* FOOTER */}
+          <View style={{ flexDirection: "row", gap: 20, padding: 10 }}>
+            <Feather name="link" size={20} color="black" />
+            <Feather name="image" size={20} color="black" onPress={pickImage} />
+            <Feather name="youtube" size={20} color="black" />
+            <Feather name="list" size={20} color="black" />
+          </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>
