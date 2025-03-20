@@ -3,9 +3,9 @@ import { Entypo, Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useState, useRef, memo } from "react";
 import { Comment } from "../../types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "../lib/supabse";
-import { fetchReplies } from "../services/comment.service";
+import { deleteComment, fetchReplies } from "../services/comment.service";
 
 type CommentListItemProps = {
   comment: Comment;
@@ -20,10 +20,25 @@ const CommentListItem = ({
 }: CommentListItemProps) => {
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
   const supabase = useSupabase();
+  const queryClient = useQueryClient();
 
   const { data: replies } = useQuery({
     queryKey: ["replies", { parentId: comment.id }],
     queryFn: () => fetchReplies(comment.id, supabase)
+  });
+
+  const { mutate: removeComment } = useMutation({
+    mutationFn: async () => {
+      return deleteComment(comment.id, supabase);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["comments", { postId: comment.post_id }]
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["replies", { parentId: comment.parent_id }]
+      });
+    }
   });
 
   return (
@@ -69,7 +84,12 @@ const CommentListItem = ({
           gap: 14
         }}
       >
-        <Entypo name="dots-three-horizontal" size={15} color="#737373" />
+        <Entypo
+          name="trash"
+          size={15}
+          color="#737373"
+          onPress={() => removeComment()}
+        />
         <Octicons
           name="reply"
           size={16}
@@ -138,7 +158,7 @@ const CommentListItem = ({
           )}
         />
       )} */}
-      {isShowReplies && replies?.length && (
+      {isShowReplies && !!replies?.length && (
         <>
           {replies.map((item: any) => (
             <CommentListItem
