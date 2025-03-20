@@ -1,11 +1,17 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database, TablesInsert } from "../types/database.types";
 
-export const fetchPosts = async (supabase: SupabaseClient<Database>) => {
+export const fetchPosts = async (
+  { limit = 10, offset = 0 }: { limit?: number; offset?: number },
+  supabase: SupabaseClient<Database>
+) => {
   const { data, error } = await supabase
     .from("posts")
-    .select("*, group:groups(*), upvotes(value.sum()), nr_of_comments:comments(count)")
-    .order("created_at", { ascending: false });
+    .select(
+      "*, group:groups(*), upvotes(value.sum()), nr_of_comments:comments(count)"
+    )
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit-1);
 
   if (error) {
     throw error;
@@ -20,7 +26,9 @@ export const fetchPostById = async (
 ) => {
   const { data, error } = await supabase
     .from("posts")
-    .select("*, group:groups(*), upvotes(value.sum()), nr_of_comments:comments(count)")
+    .select(
+      "*, group:groups(*), upvotes(value.sum()), nr_of_comments:comments(count)"
+    )
     .eq("id", id)
     .single();
 
@@ -30,8 +38,6 @@ export const fetchPostById = async (
     return data;
   }
 };
-
-
 
 // export const fetchUpvotesByPost = async (
 //   id: string,
@@ -61,7 +67,6 @@ export const deletePostById = async (
     return data;
   }
 };
-
 
 type InsertPost = TablesInsert<"posts">;
 
