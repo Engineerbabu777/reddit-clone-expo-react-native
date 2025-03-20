@@ -6,6 +6,7 @@ import { Comment } from "../../types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "../lib/supabse";
 import { deleteComment, fetchReplies } from "../services/comment.service";
+import { useSession } from "@clerk/clerk-expo";
 
 type CommentListItemProps = {
   comment: Comment;
@@ -19,6 +20,7 @@ const CommentListItem = ({
   handleReply
 }: CommentListItemProps) => {
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
+  const { session } = useSession();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
@@ -84,12 +86,14 @@ const CommentListItem = ({
           gap: 14
         }}
       >
-        <Entypo
-          name="trash"
-          size={15}
-          color="#737373"
-          onPress={() => removeComment()}
-        />
+        {session?.user.id === comment.user.id && (
+          <Entypo
+            name="trash"
+            size={15}
+            color="#737373"
+            onPress={() => removeComment()}
+          />
+        )}
         <Octicons
           name="reply"
           size={16}
