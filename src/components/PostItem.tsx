@@ -113,7 +113,7 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
               size={19}
               color="black"
             />
-            <Text style={styles.iconText}>{post.nr_of_comments}</Text>
+            <Text style={styles.iconText}>{post.nr_of_comments?.[0]?.count}</Text>
           </View>
         </View>
         <View style={styles.footerRight}>
