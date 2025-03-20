@@ -86,7 +86,7 @@ const CommentListItem = ({
           gap: 14
         }}
       >
-        {session?.user.id === comment.user.id && (
+        {session?.user.id === comment.user_id && (
           <Entypo
             name="trash"
             size={15}
