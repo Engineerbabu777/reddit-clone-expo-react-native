@@ -24,10 +24,12 @@ import {
   fetchComments,
   insertComment
 } from "../../../services/comment.service";
+import { useSession } from "@clerk/clerk-expo";
 
 export default function DetailedPost() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const supabase = useSupabase();
+  const session = useSession();
 
   const [comment, setComment] = useState<string>("");
   const [isInputFocused, setIsFocused] = useState<boolean>(false);
@@ -81,7 +83,6 @@ export default function DetailedPost() {
       );
     },
     onSuccess: () => {
-     
       queryClient.invalidateQueries({ queryKey: ["comments", { postId: id }] });
       queryClient.invalidateQueries({
         queryKey: ["replies", { parentId: replyToId }]
@@ -138,12 +139,14 @@ export default function DetailedPost() {
                   gap: 10
                 }}
               >
-                <Entypo
-                  name="trash"
-                  size={24}
-                  color={"white"}
-                  onPress={() => remove()}
-                />
+                {session?.session?.user?.id === post.user_id && (
+                  <Entypo
+                    name="trash"
+                    size={24}
+                    color={"white"}
+                    onPress={() => remove()}
+                  />
+                )}
                 <AntDesign name="search1" size={24} color={"white"} />
                 <MaterialIcons name="sort" size={24} color={"white"} />
                 <Entypo

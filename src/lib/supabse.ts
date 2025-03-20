@@ -16,7 +16,7 @@ export const useSupabase = () => {
       storage: AsyncStorage,
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: false
+      detectSessionInUrl: false,
     },
     global: {
       // Get the custom Supabase token from Clerk
@@ -25,7 +25,7 @@ export const useSupabase = () => {
         const clerkToken = await session?.getToken({
           // Pass the name of the JWT template you created in the Clerk Dashboard
           // For this tutorial, you named it 'supabase'
-          template: "supabase"
+          template: "supabase",
         });
 
         // Insert the Clerk Supabase token into the headers
@@ -35,10 +35,21 @@ export const useSupabase = () => {
         // Call the default fetch
         return fetch(url, {
           ...options,
-          headers
+          headers,
         });
-      }
-    }
+      },
+    },
+  });
+};
+
+export const useSupabaseWithoutHeader = () => {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      storage: AsyncStorage,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+    },
   });
 };
 
