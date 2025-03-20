@@ -81,7 +81,12 @@ export default function DetailedPost() {
       );
     },
     onSuccess: () => {
+     
       queryClient.invalidateQueries({ queryKey: ["comments", { postId: id }] });
+      queryClient.invalidateQueries({
+        queryKey: ["replies", { parentId: replyToId }]
+      });
+      setComment("");
       setReplyToId(null);
     },
     onError: () => {
