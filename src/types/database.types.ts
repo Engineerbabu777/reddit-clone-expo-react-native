@@ -138,16 +138,19 @@ export type Database = {
       }
       users: {
         Row: {
+          email: string | null
           id: string
           image: string | null
           name: string
         }
         Insert: {
+          email?: string | null
           id?: string
           image?: string | null
           name: string
         }
         Update: {
+          email?: string | null
           id?: string
           image?: string | null
           name?: string

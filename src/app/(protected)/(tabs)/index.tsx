@@ -5,6 +5,10 @@ import { Tables } from "../../../types/database.types";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "../../../services/post.service";
 import { useSupabase } from "../../../lib/supabse";
+import { useUser } from "@clerk/clerk-expo";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import useUserCreationInSupabase from "../../../utils/useOnetimeUpdate.hook";
 
 export type PostWithGroupAndName = Tables<"posts"> & {
   // user: Tables<"users">;
@@ -14,6 +18,9 @@ export type PostWithGroupAndName = Tables<"posts"> & {
 };
 
 export default function HomeScreen() {
+  const user = useUser();
+  useUserCreationInSupabase();
+
   const supabase = useSupabase();
   const {
     data,

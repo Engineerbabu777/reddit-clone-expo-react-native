@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { useSupabase } from "../../../lib/supabse";
 import { uploadImage } from "../../../utils/supabaseImages";
 import { insertPost } from "../../../services/post.service";
+import { useUser } from "@clerk/clerk-expo";
 
 type InsertPost = TablesInsert<"posts">;
 
@@ -32,8 +33,10 @@ export default function CreateScreen() {
   const [title, setTitle] = useState<string>("");
   const [bodyText, setBodyText] = useState<string>("");
   const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const supabase = useSupabase();
+  const user = useUser();
   const [group, setGroup] = useAtom(selectedGroupAtom);
 
   const queryClient = useQueryClient();
@@ -48,18 +51,22 @@ export default function CreateScreen() {
         throw new Error("Title is required");
       }
 
+      console.log({ ID: user.user?.id });
+
       return insertPost(
         {
           description: bodyText,
           title,
           group_id: group?.id,
           created_at: new Date().toUTCString(),
-          image
+          image,
+          user_id: user.user?.id
         },
         supabase
       );
     },
     onSuccess: (data) => {
+      setLoading(false);
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       goBack();
     },
@@ -78,6 +85,7 @@ export default function CreateScreen() {
   };
 
   const onPostClick = async () => {
+    setLoading(true);
     let imagePath = image ? await uploadImage(image, supabase) : undefined;
 
     mutate(imagePath);

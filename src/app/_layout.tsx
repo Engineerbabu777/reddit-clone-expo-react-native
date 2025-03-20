@@ -3,7 +3,7 @@ import {
   ClerkProvider,
   ClerkLoaded,
   useAuth,
-  ClerkLoading
+  ClerkLoading,
 } from "@clerk/clerk-expo";
 import { Slot, useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
