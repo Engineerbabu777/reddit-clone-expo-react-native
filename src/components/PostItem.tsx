@@ -1,5 +1,5 @@
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { formatDistanceToNowStrict } from "date-fns";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
@@ -8,6 +8,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUpvotes, selectMyVote } from "../services/upvotes.service";
 import { useSupabase } from "../lib/supabse";
 import { useSession } from "@clerk/clerk-expo";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "../types/database.types";
+import { downloadImage } from "../utils/supabaseImages";
+import SupabaseImage from "./SupabaseImage";
 
 type Props = {
   post: PostWithGroupAndName;
@@ -19,6 +23,7 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
   const shouldShowDescription = isDetailedPost || !post.image;
   const router = useRouter();
   const { session } = useSession();
+  const [image, setImage] = useState();
 
   const supabase = useSupabase();
   const queryClient = useQueryClient();
@@ -46,6 +51,12 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
     router.push(`/post/${post.id}`);
   };
 
+  useEffect(() => {
+    if (post?.image) {
+      downloadImage(post.image, supabase).then((data) => setImage(data as any));
+    }
+  }, [post.image]);
+
   return (
     <View style={styles.container}>
       <Pressable onPress={navigateToPost} style={{ width: "100%" }}>
@@ -70,7 +81,11 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
           {/* CONTENT! */}
           <Text style={styles.postTitleText}>{post?.title}</Text>
           {shouldSHowImage && post.image && (
-            <Image source={{ uri: post.image! }} style={styles.postImage} />
+            <SupabaseImage
+              path={post.image}
+              style={styles.postImage}
+              bucket="images"
+            />
           )}
           {shouldShowDescription && post.description && (
             <Text numberOfLines={4}>{post.description}</Text>
@@ -113,7 +128,9 @@ const PostListItem = ({ post, isDetailedPost }: Props) => {
               size={19}
               color="black"
             />
-            <Text style={styles.iconText}>{post.nr_of_comments?.[0]?.count}</Text>
+            <Text style={styles.iconText}>
+              {post.nr_of_comments?.[0]?.count}
+            </Text>
           </View>
         </View>
         <View style={styles.footerRight}>

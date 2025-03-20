@@ -21,26 +21,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { selectedGroupAtom } from "../../../atoms";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSupabase } from "../../../lib/supabse";
+import { uploadImage } from "../../../utils/supabaseImages";
+import { insertPost } from "../../../services/post.service";
 
 type InsertPost = TablesInsert<"posts">;
-const insertPost = async (
-  post: InsertPost,
-  supabase: SupabaseClient<Database>
-) => {
-  const { data, error } = await supabase
-    .from("posts")
-    .insert(post)
-    .select()
-    .single();
-
-  if (error) {
-    throw error;
-  } else {
-    return data;
-  }
-};
 
 export default function CreateScreen() {
   const [title, setTitle] = useState<string>("");
@@ -52,8 +38,8 @@ export default function CreateScreen() {
 
   const queryClient = useQueryClient();
 
-  const { isPending, data, mutate } = useMutation({
-    mutationFn: async () => {
+  const { isPending, mutate } = useMutation({
+    mutationFn: async (image: string | undefined) => {
       if (!group) {
         throw new Error("Group is required");
       }
@@ -67,7 +53,8 @@ export default function CreateScreen() {
           description: bodyText,
           title,
           group_id: group?.id,
-          created_at: new Date().toUTCString()
+          created_at: new Date().toUTCString(),
+          image
         },
         supabase
       );
@@ -85,8 +72,15 @@ export default function CreateScreen() {
   const goBack = () => {
     setTitle("");
     setBodyText("");
+    setImage("");
     setGroup(null);
     router.back();
+  };
+
+  const onPostClick = async () => {
+    let imagePath = image ? await uploadImage(image, supabase) : undefined;
+
+    mutate(imagePath);
   };
 
   const pickImage = async () => {
@@ -130,7 +124,7 @@ export default function CreateScreen() {
             style={{
               marginLeft: "auto"
             }}
-            onPress={() => mutate()}
+            onPress={() => onPostClick()}
             disabled={isPending}
           >
             <Text style={styles.postText}>
