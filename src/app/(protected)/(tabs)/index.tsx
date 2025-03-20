@@ -1,11 +1,10 @@
-import { ActivityIndicator, Button, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import PostListItem from "../../../components/PostItem";
 import { Tables } from "../../../types/database.types";
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "../../../services/post.service";
 import { useSupabase } from "../../../lib/supabse";
-import { Comment } from "../../../../types";
 
 export type PostWithGroupAndName = Tables<"posts"> & {
   // user: Tables<"users">;
